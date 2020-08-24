@@ -1,6 +1,8 @@
 <template>
   <div>
-    <router-view></router-view>
+    <h3>
+      个人信息
+    </h3>
   </div>
 </template>
 
