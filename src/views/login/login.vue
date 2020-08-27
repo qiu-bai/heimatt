@@ -34,19 +34,23 @@
         </van-field>
       </van-cell-group>
       <div class="btn">
-        <van-button type="info" size="large">登录</van-button>
+        <van-button type="info" :loading="isLoading" size="large"
+          >登录</van-button
+        >
       </div>
     </van-form>
   </div>
 </template>
 
 <script>
-import instance from '../../utils/request.js'
+import { saveLocal } from '../../utils/mylocal.js'
+import { apiLogin } from '../../api/user.js'
 export default {
   data () {
     return {
+      isLoading: false, // 是否处于登录状态
       user: {
-        mobile: '13911111111',
+        mobile: '17727540070',
         code: '246810'
       },
       rules: {
@@ -73,18 +77,21 @@ export default {
     }
   },
   methods: {
-    onSubmit () {
-      instance({
-        url: '/app/v1_0/authorizations',
-        method: 'post',
-        data: {
-          mobile: this.user.mobile,
-          code: this.user.code
-        }
-      }).then(res => {
-        console.log(res.data.data.token)
+    async onSubmit () {
+      if (this.isLoading === true) {
+        return
+      }
+      this.isLoading = true
+      try {
+        const res = await apiLogin(this.user)
+        // console.log(res.data.data.token)
+        // this.$store.commit('setUserInfo', res.data.data)
+        saveLocal('token', res.data.data)
         this.$router.push('/index')
-      })
+      } catch (err) {
+        this.$toast.fail(err.message)
+      }
+      this.isLoading = false
     }
   }
 }

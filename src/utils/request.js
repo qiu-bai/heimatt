@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getLocal } from './mylocal.js'
 const instance = axios.create({
   baseURL: 'http://ttapi.research.itcast.cn/'
 })
@@ -6,6 +7,13 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
   function (config) {
+    const needToken = config.needToken
+    if (needToken) {
+      const token = getLocal('token')
+      if (token && token.token) {
+        config.headers.Authorization = `Bearer ${token.token}`
+      }
+    }
     // 在发送请求之前做些什么
     return config
   },
@@ -26,19 +34,4 @@ instance.interceptors.response.use(
     return Promise.reject(error)
   }
 )
-// 关于会员所要的设置
-// 保存token
-function saveLocal (key, value) {
-  window.localStorage.setItem(key, value)
-}
-// 获取token
-function getLocal (key) {
-  return window.localStorage.getItem(key)
-}
-// 删除token
-function removeLocal (key) {
-  window.localStorage.removeItem(key)
-}
-export { saveLocal, getLocal, removeLocal }
-
 export default instance

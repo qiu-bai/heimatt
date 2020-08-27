@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <h3>
-      个人信息
-    </h3>
-  </div>
+  <div>搜索页</div>
 </template>
 
 <script>
