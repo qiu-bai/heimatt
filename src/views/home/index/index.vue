@@ -19,14 +19,47 @@
             @load="onLoad"
           >
             <van-cell
+              class="details"
               v-for="(subitem, subindex) in item.articleList"
               :key="subindex"
-              :title="subitem.title"
-            />
+            >
+              <template #title>
+                <!-- 文章标题 -->
+                <h3>{{ subitem.title }}</h3>
+                <!-- 文章图片 -->
+                <van-grid
+                  v-if="subitem.cover.type !== 0"
+                  :border="false"
+                  :column-num="3"
+                >
+                  <van-grid-item
+                    v-for="(imgitem, imgindex) in subitem.cover.images"
+                    :key="imgindex"
+                  >
+                    <van-image lazy-load :src="imgitem" />
+                  </van-grid-item>
+                </van-grid>
+                <!-- 文章的其他信息 -->
+                <div class="other">
+                  <div class="left">
+                    <span>{{ subitem.aut_name }}</span>
+                    <span>{{ subitem.comm_count }}条评论</span>
+                    <span>{{ subitem.pubdate | fromtime }}</span>
+                  </div>
+                  <div class="right" @click="openMore(subitem)">
+                    <van-icon name="cross" />
+                  </div>
+                </div>
+              </template>
+            </van-cell>
           </van-list>
         </van-pull-refresh>
       </van-tab>
     </van-tabs>
+    <van-icon name="bars" class="btnicon" @click="onchannel" />
+    <!-- 频道的弹出层 -->
+    <channel ref="channel" :channelList="channelList" :active="active" />
+    <more ref="more" :artid="artid" :autid="autid" @delarticle="delarticle" />
   </div>
 </template>
 
@@ -34,6 +67,13 @@
 import { apiGetChannelsList } from '../../../api/channel.js'
 import { getLocal } from '../../../utils/mylocal.js'
 import { apiGetArticle } from '../../../api/article.js'
+import channel from './com/channel'
+// 导入组件more
+import more from './com/more'
+// 导入懒加载
+import Vue from 'vue'
+import { Lazyload } from 'vant'
+Vue.use(Lazyload)
 export default {
   data () {
     return {
@@ -42,10 +82,35 @@ export default {
       // isLoading: false,
       // list: [],
       channelList: [], // 数据频道
-      active: 0 // 当前选中频道的下标
+      active: 0, // 当前选中频道的下标
+      artid: 0, // 当前要操作的文章的id
+      autid: 0 // 当前要操作的文章作者的id
     }
   },
+  components: {
+    channel,
+    more
+  },
   methods: {
+    // 跟据id删除不喜欢的文章数据
+    delarticle (artid) {
+      // 从当前频道的articleList中删除id为artid的文章
+      // 得到当前选中的频道数据的articleList
+      const articleList = this.channelList[this.active].articleList
+      // 遍历articleList,删除 artid对应的文章数据
+      articleList.forEach((item, index) => {
+        if (item.art_id === artid) {
+          // 说明当前元素的art_id与artid是相同的,说明这个数据是要被删除的
+          articleList.splice(index, 1)
+        }
+      })
+    },
+    openMore (subitem) {
+      this.artid = subitem.art_id
+      this.$refs.more.show = true
+      // 得到当前文章的作者id
+      this.autid = subitem.aut_id
+    },
     async onLoad () {
       // v-model:loading=>是否处于正在上拉加载更多的操作
       //  将来onload执行后会自动将loading改为true
@@ -73,8 +138,6 @@ export default {
       if (res.data.data.results.length === 0) {
         // 说明数据已经加载完毕
         currentChannel.finished = true
-        currentChannel.isLoading = false
-        currentChannel.loading = true
       }
     },
     async onRefresh () {
@@ -82,7 +145,7 @@ export default {
       const currentChannel = this.channelList[this.active]
       // 清除当前频道下的所有数据
       currentChannel.articleList = []
-      currentChannel.loading = false
+      currentChannel.loading = true
       currentChannel.finished = false
       currentChannel.isLoading = false
       this.onLoad()
@@ -119,6 +182,9 @@ export default {
         this.$set(item, 'articleList', [])
       })
       // console.log(this.channelList)
+    },
+    onchannel () {
+      this.$refs.channel.show = true
     }
   },
   created () {
@@ -137,6 +203,42 @@ export default {
     background: linear-gradient(to right, rgb(179, 55, 211), rgb(5, 211, 230));
     /deep/.van-nav-bar__title {
       color: #fff;
+    }
+  }
+  /deep/.van-tabs--line .van-tabs__wrap {
+    width: 90%;
+  }
+  /deep/.details {
+    background-image: url('../../../assets/kapain.png');
+  }
+  .btnicon {
+    position: fixed;
+    right: 0;
+    top: 46px;
+    width: 10%;
+    background-color: pink;
+    text-align: center;
+    line-height: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+  .other {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    .left {
+      span {
+        margin-right: 12px;
+      }
+    }
+    .right {
+      border: 1px solid #ccc;
+      height: 24px;
+      width: 24px;
+      text-align: center;
+      line-height: 28px;
+      border-radius: 12px;
+      background: linear-gradient(to right, rgb(6, 161, 233), rgb(6, 236, 140));
     }
   }
 }

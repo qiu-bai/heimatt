@@ -6,6 +6,12 @@ import store from './store'
 import Vant from 'vant'
 import 'vant/lib/index.css'
 import './style/index.css'
+// 导入时间处理的过滤器
+import './filter/myfilter.js'
+// 导入已经封装好的插件
+import pluginObj from '@/utils/myplugin.js'
+// 使用插件
+Vue.use(pluginObj)
 Vue.use(Vant)
 
 Vue.config.productionTip = false
@@ -24,6 +30,20 @@ Vue.config.productionTip = false
 // 12.0每个文件结束之后必须添加一个新的换行
 // 13.0空行不能同时存在多个
 // 14.0使用let声明的变量必须要修改
+// 封装全局的方法:用来验证登录的全局的方法
+// Vue.prototype.$login = function () {
+//   // 获取token
+//   var token = getLocal('token')
+//   // 判断
+//   if (!token || !token.token) {
+//     Toast.fail('还未登录')
+//     router.push('/login')
+//     // 返回false,表示未登录
+//     return false
+//   }
+//   // 返回 true,表示已经登录
+//   return true
+// }
 
 new Vue({
   router,

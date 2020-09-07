@@ -50,7 +50,7 @@ export default {
     return {
       isLoading: false, // 是否处于登录状态
       user: {
-        mobile: '17727540070',
+        mobile: '13911111111',
         code: '246810'
       },
       rules: {
@@ -84,10 +84,13 @@ export default {
       this.isLoading = true
       try {
         const res = await apiLogin(this.user)
-        // console.log(res.data.data.token)
-        // this.$store.commit('setUserInfo', res.data.data)
+        // 判断请求的路由
+        if (this.$route.path === '/login') {
+          this.$router.push('/index')
+        } else {
+          this.$router.go(-1)
+        }
         saveLocal('token', res.data.data)
-        this.$router.push('/index')
       } catch (err) {
         this.$toast.fail(err.message)
       }

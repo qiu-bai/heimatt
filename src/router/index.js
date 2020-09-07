@@ -7,7 +7,10 @@ import index from '../views/home/index/index.vue'
 import search from '../views/home/search/search.vue'
 import video from '../views/home/video/video.vue'
 import my from '../views/home/my/my.vue'
-
+import results from '../views/home/search/com/results.vue'
+import detail from '@/views/detail/detail.vue'
+import info from '@/views/info/info.vue'
+import photoupload from '@/views/info/photoupload/photoupload.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -24,6 +27,10 @@ const routes = [
     component: login
   },
   {
+    path: '/checklogin',
+    component: login
+  },
+  {
     path: '/index',
     component: Index,
     redirect: '/index',
@@ -33,6 +40,22 @@ const routes = [
       { path: '/video', component: video },
       { path: '/my', component: my }
     ]
+  },
+  {
+    path: '/results/:key',
+    component: results
+  },
+  {
+    path: '/detail/:artid',
+    component: detail
+  },
+  {
+    path: '/info',
+    component: info
+  },
+  {
+    path: '/photoupload',
+    component: photoupload
   }
 ]
 

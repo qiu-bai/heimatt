@@ -3,8 +3,8 @@
     <!-- 用户信息区域 -->
     <div class="top">
       <div class="anth">
-        <img src="../../../assets/卡西莫多.png" alt="" />
-        <span>{{ userInfo.name }}</span>
+        <img :src="userInfo.photo" @click="$router.push('/info')" alt="" />
+        <span  @click="$router.push('/info')">{{ userInfo.name }}</span>
         <span class="code">申请认证</span>
       </div>
       <div class="read">
